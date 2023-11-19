@@ -1,0 +1,50 @@
+##This works in the chipseq environment (needs python 3.8.6) 
+
+# copy .bed files from flare results (directory 7) to sailor directory
+
+cd /N/slate/by6/GSF3524new/results/flare_results/7_scored_outputs
+
+scp *.bed /N/slate/by6/GSF3524new/sailor
+
+
+# copy WS275 files to sailor directory
+# In Mac terminal, 
+
+scp /Users/yang/Desktop/c.elegans.WS275.annotation.final.bed by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/sailor
+
+scp /Users/yang/Desktop/c_elegans.PRJNA13758.WS275.canonical_geneset.gtf by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/sailor
+
+scp /Users/yang/Desktop/annotator.sailor.py by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/sailor
+
+
+# in slate sailor directory, install pybedtools (only need to do once) (had to have python 3.6.8 for this to work)
+
+cd /N/slate/by6/GSF3524new/sailor
+
+conda activate chipseq
+
+conda install -c conda-forge python=3.8.6
+
+conda uninstall pybedtools 
+
+conda install -c bioconda pybedtools=0.8.1
+
+y
+
+
+# run annotation
+
+python3 annotator.sailor.py --gtf c_elegans.PRJNA13758.WS275.canonical_geneset.gtf --fwd GSF3524-396mixed.merged.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --rev GSF3524-396mixed.merged.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --wb c.elegans.WS275.annotation.final.bed --o /N/slate/by6/GSF3524new/results/flare_results/396mixedannotated.sites.csv
+
+python3 annotator.sailor.py --gtf c_elegans.PRJNA13758.WS275.canonical_geneset.gtf --fwd GSF3524-6mixed.merged.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --rev GSF3524-6mixed.merged.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --wb c.elegans.WS275.annotation.final.bed --o /N/slate/by6/GSF3524new/results/flare_results/6mixedannotated.sites.csv
+
+
+# copy and paste files to Mac 
+# in mac terminal 
+
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/results/flare_results/396mixedannotated.csv ~/Desktop/
+
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/results/flare_results/6mixedannotated.csv ~/Desktop/
+
+
+
