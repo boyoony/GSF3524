@@ -131,3 +131,10 @@ jq -n ’{
 
  snakemake --snakefile /N/slate/by6/GSF3524new/sailor/workflow_sailor/Snakefile --configfile /N/slate/by6/GSF3524new/sailor/GSF3524-6mixed.json --use-singularity --singularity-args '--bind /N/slate/by6/GSF3524new --bind /N/slate/by6/GSF3524new/genome --bind /N/slate/by6/GSF3524new/sailor/workflow_sailor/scripts --bind /N/slate/by6/GSF3524new/sailor/workflow_sailor --bind /N/slate/by6/GSF3524new/results/flare_results' -j1 
 
+
+#Copy and paste output files to Mac 
+#In Mac terminal
+
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/results/flare_results/7_scored_outputs/GSF3524-396* ~/Desktop/
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/GSF3524new/results/flare_results/7_scored_outputs/GSF3524-6* ~/Desktop/
+
