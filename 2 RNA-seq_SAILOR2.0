@@ -1,0 +1,133 @@
+# If you are in rnaseq environment, go to base environment for FLARE
+
+conda activate base 
+
+
+#in GSF3524new directory, make a new folder for sailor 
+
+mkdir sailor
+
+
+#In aligned directory, create merged bam file
+
+module load samtools
+
+
+## If you got an error message on gcc
+
+module unload gcc/12.1.0
+
+module load gcc/9.3.0
+
+module load samtools
+
+
+## If you got an error message on python (if you haven't done this, do this first, conda install -c conda-forge python=3.9)
+
+module load python/3.9.8
+
+module load samtools
+
+
+#Copy and paste files from STAR alignment for running SAILOR 
+
+cd /N/slate/by6/GSF3524new/results/aligned
+
+scp GSF3524-396mixed-Rep1_S25_R1_001_Aligned.sortedByCoord.out.bam /N/slate/by6/GSF3524new/sailor
+scp GSF3524-396mixed-Rep2_S27_R1_001_Aligned.sortedByCoord.out.bam /N/slate/by6/GSF3524new/sailor
+scp GSF3524-396mixed-Rep3_S29_R1_001_Aligned.sortedByCoord.out.bam /N/slate/by6/GSF3524new/sailor
+
+scp GSF3524-6mixed-Rep1_S26_R1_001_Aligned.sortedByCoord.out.bam /N/slate/by6/GSF3524new/sailor
+scp GSF3524-6mixed-Rep2_S28_R1_001_Aligned.sortedByCoord.out.bam /N/slate/by6/GSF3524new/sailor
+scp GSF3524-6mixed-Rep3_S30_R1_001_Aligned.sortedByCoord.out.bam /N/slate/by6/GSF3524new/sailor
+
+
+#Merge replicate 1-3 into one file for sunning SAILOR 
+
+samtools merge -@ 8 GSF3524-396mixed.merged.bam GSF3524-396mixed-Rep1_S25_R1_001_Aligned.sortedByCoord.out.bam GSF3524-396mixed-Rep2_S27_R1_001_Aligned.sortedByCoord.out.bam GSF3524-396mixed-Rep3_S29_R1_001_Aligned.sortedByCoord.out.bam 
+
+samtools merge -@ 8 GSF3524-6mixed.merged.bam GSF3524-6mixed-Rep1_S26_R1_001_Aligned.sortedByCoord.out.bam GSF3524-6mixed-Rep2_S28_R1_001_Aligned.sortedByCoord.out.bam GSF3524-6mixed-Rep3_S30_R1_001_Aligned.sortedByCoord.out.bam
+
+
+#copy bedfile to sailor directory
+#in HundleyLab project space FLARE directory
+
+cd /N/project/HundleyLab/FLARE 
+
+scp c.elegans.WS275.snps.nostrand.sorted.bed /N/slate/by6/GSF3524new/sailor
+
+
+#create a .json file (on text editor) with the following contents:
+
+jq -n ’{
+  "samples_path": "/N/slate/by6/GSF3524new/sailor”,
+  "samples": [
+    "GSF3524-396mixed.merged.bam"             
+  ],
+  "reverse_stranded": true,
+  "reference_fasta": "/N/slate/by6/GSF3524new/genome/assembly.fasta",
+  "known_snps": "/N/slate/by6/GSF3524new/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "edit_type": "AG”,
+  "output_dir": "/N/slate/by6/GSF3524new/results/flare_results"
+}’ > GSF3524-396mixed.json 
+
+
+#copy .json file to carbonate
+
+scp GSF3524-396mixed.json /N/slate/by6/GSF3524new/sailor
+
+
+#copy workflow_sailor scripts and snakefile from HundleyLab project space FLARE directory
+
+cd /N/project/HundleyLab/FLARE 
+
+scp -r workflow_sailor /N/slate/by6/GSF3524new/sailor
+
+
+#make all workflow_sailor scrips executable
+
+cd /N/slate/by6/GSF3524new/sailor/workflow_sailor
+
+chmod +x filename
+
+
+#on carbonate
+#install snakemake
+
+conda install -c bioconda -c conda-forge snakemake
+
+
+#in GSF3587/results
+
+mkdir flare_results
+
+
+#in interactive terminal
+#in sailor directory
+#load singularity every single time you run SAILOR
+
+module load singularity
+
+
+#use the following command to run SAILOR. under "--singularity-args --'bind' you will have to give access to every single directory that has relevant files
+
+snakemake --snakefile /N/slate/by6/GSF3524new/sailor/workflow_sailor/Snakefile --configfile /N/slate/by6/GSF3524new/sailor/GSF3524-396mixed.json --use-singularity --singularity-args '--bind /N/slate/by6/GSF3524new --bind /N/slate/by6/GSF3524new/genome --bind /N/slate/by6/GSF3524new/sailor/workflow_sailor/scripts --bind /N/slate/by6/GSF3524new/sailor/workflow_sailor --bind /N/slate/by6/GSF3524new/results/flare_results' -j1 
+
+
+#Repeat this for another sample 
+
+jq -n ’{
+  "samples_path": "/N/slate/by6/GSF3524new/sailor”,
+  "samples": [
+    "GSF3524-6mixed.merged.bam"             
+  ],
+  "reverse_stranded": true,
+  "reference_fasta": "/N/slate/by6/GSF3524new/genome/assembly.fasta",
+  "known_snps": "/N/slate/by6/GSF3524new/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "edit_type": "AG”,
+  "output_dir": "/N/slate/by6/GSF3524new/results/flare_results"
+}’ > GSF3524-6mixed.json 
+
+
+ snakemake --snakefile /N/slate/by6/GSF3524new/sailor/workflow_sailor/Snakefile --configfile /N/slate/by6/GSF3524new/sailor/GSF3524-6mixed.json --use-singularity --singularity-args '--bind /N/slate/by6/GSF3524new --bind /N/slate/by6/GSF3524new/genome --bind /N/slate/by6/GSF3524new/sailor/workflow_sailor/scripts --bind /N/slate/by6/GSF3524new/sailor/workflow_sailor --bind /N/slate/by6/GSF3524new/results/flare_results' -j1 
+
