@@ -1,0 +1,137 @@
+# Make a folder in slate 
+
+cd /N/slate/by6
+
+mkdir GSF3524new
+
+
+# Move R1 read files to the folder 
+
+cd /N/slate/by6/396RNAseq 
+
+mv GSF3524-396mixed-Rep1_S25_R1_001.fastq /N/slate/by6/GSF3524new
+
+mv GSF3524-396mixed-Rep2_S27_R1_001.fastq /N/slate/by6/GSF3524new
+
+mv GSF3524-396mixed-Rep3_S29_R1_001.fastq /N/slate/by6/GSF3524new
+
+mv GSF3524-6mixed-Rep1_S26_R1_001.fastq /N/slate/by6/GSF3524new
+
+mv GSF3524-6mixed-Rep2_S28_R1_001.fastq /N/slate/by6/GSF3524new
+
+mv GSF3524-6mixed-Rep3_S30_R1_001.fastq /N/slate/by6/GSF3524new
+
+cd /N/slate/by6/GSF3524new
+
+
+#activate rnaseq environment
+conda activate rnaseq
+
+
+#unload perl
+module unload perl
+
+
+#Assign Variables
+ASSEMBLY='ftp://ftp.wormbase.org/pub/wormbase/releases/WS275/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS275.genomic.fa.gz'
+ANNOTATION='ftp://ftp.wormbase.org/pub/wormbase/releases/WS275/species/c_elegans/PRJNA13758/c_elegans.PRJNA13758.WS275.canonical_geneset.gtf.gz'
+
+
+################################
+## Generate STAR Genome Index ##
+################################
+
+# Make a directory to store the genome files.
+mkdir -p genome/index
+
+
+# Download and unpack the genome assembly.
+curl $ASSEMBLY | gunzip > ./genome/assembly.fasta
+
+
+# Download and unpack the genome annotation.
+curl $ANNOTATION | gunzip > ./genome/annotation.gtf
+
+
+# Create the STAR genome index.
+# --genomeSAindexNbases 12 was recommended by software.
+#STAR version 2.7.10b
+
+STAR \
+  --runThreadN 4 \
+  --runMode genomeGenerate \
+  --genomeDir genome/index \
+  --genomeFastaFiles genome/assembly.fasta \
+  --sjdbGTFfile genome/annotation.gtf \
+  --genomeSAindexNbases 12
+
+
+###########################
+## Align Reads to Genome ##
+###########################
+
+# Create an output directory for aligned reads.
+mkdir -p results/aligned
+
+
+# Align the reads.
+FASTQ=$GSF3524*
+
+for FASTQ in ${FASTQ[@]}; do
+  PREFIX=results/aligned/$(basename $FASTQ .fastq)_
+  STAR \
+    --runThreadN 8 \
+    --outFilterMultimapNmax 1 \
+    --outFilterScoreMinOverLread .66 \
+    --outFilterMismatchNmax 13 \
+    --outFilterMismatchNoverLmax .3 \
+    --runMode alignReads \
+    --genomeDir genome/index \
+    --readFilesIn $FASTQ \
+    --outFileNamePrefix $PREFIX \
+    --outSAMattributes All \
+    --outSAMtype BAM SortedByCoordinate
+done
+
+
+# Indexing the BAM files.
+BAMS=($(find ./results/aligned -name "*\.bam"))
+
+for BAM in ${BAMS[@]}; do 
+  samtools index $BAM
+  done
+  
+
+#remove genome* and results* files
+
+
+####################
+## Count Features ##
+####################
+
+# Create an output directory for read counts.
+mkdir -p results/counts
+
+
+# Count reads.
+BAMS=$(find ./results/aligned -name "*\.bam")
+
+featureCounts \
+  -a genome/annotation.gtf \
+  -o results/counts/counts.tsv \
+  -t gene \
+  -g gene_id \
+  --largestOverlap \
+  --readExtension3 150 \
+  --primary \
+  -s 2 \
+  -T 8 \
+  ${BAMS}
+done
+
+
+# look at uniquely mapped reads %
+head GSF3524-396mixed-Rep1_S25_R1_001_Log.final.out
+
+
+# proceed to DESeq or SAILOR
