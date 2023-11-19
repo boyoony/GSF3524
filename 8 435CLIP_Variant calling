@@ -1,0 +1,135 @@
+# Activate variantcall enviroment 
+
+conda activate variantcall
+
+
+######
+Make directory for variant calling within slate folder for project 
+######
+
+cd /N/slate/by6/CLIPsailor
+
+mkdir variantcall
+
+
+######
+Copy and paste files needed for variant calling from Onedrive 
+######
+
+#In Mac Terminal, 
+
+scp /Users/yang/Desktop/variant.tar.gz by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor/variantcall
+
+#In Thinlinc Slate, unzip it with
+
+tar -xzvf variant.tar.gz
+
+#—> This command should output three files below. 
+#c_elegans.PRJNA13758.WS269.genomic.fa
+#c_elegans.WS269.snps.bed
+#variant.py
+
+
+######
+copy genome file (from genome folder), snp file (slate) and aligned bam (results/aligned folder)
+######
+
+cd /N/slate/by6/CLIPsailor/genome 
+
+scp assembly.fasta /N/slate/by6/CLIPsailor/variantcall
+
+
+cd /geode2/home/u010/by6/Carbonate
+
+scp c.elegans.WS275.snps.sorted.bed /N/slate/by6/CLIPsailor/variantcall
+
+
+cd /N/slate/by6/CLIPsailor/sailor
+
+scp GSF3524-435CLIP.merged.bam /N/slate/by6/CLIPsailor/variantcall
+
+
+#Copy and paste rep 1-3 files of 435 CLIP 
+
+cd /N/slate/by6/CLIPsailor/results/aligned
+
+scp GSF3524-435CLIP-Rep1_S5_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N/slate/by6/CLIPsailor/variantcall
+
+scp GSF3524-435CLIP-Rep2_S11_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N/slate/by6/CLIPsailor/variantcall
+
+scp GSF3524-435CLIP-Rep3_S17_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N/slate/by6/CLIPsailor/variantcall
+
+
+######
+remove duplicate reads from bam file (takes ~5 minutes per file)--
+######
+
+cd /N/slate/by6/CLIPsailor/variantcall
+
+samtools rmdup GSF3524-435CLIP-Rep1_S5_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam 435CLIP_rep1_m_nodup.bam
+
+samtools rmdup GSF3524-435CLIP-Rep2_S11_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam 435CLIP_rep2_m_nodup.bam
+
+samtools rmdup GSF3524-435CLIP-Rep3_S17_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam 435CLIP_rep3_m_nodup.bam
+
+
+######
+Call the variant and clean up the output file with one line (took about 20 minutes for one file) — does not work in the variantcall environtment. Had to convert to rnaseq environment 
+######
+
+samtools mpileup -u -I -t DP4 -v -f assembly.fasta 435CLIP_rep1_m_nodup.bam | awk '$5 != "<*>"' | tail -n +30 > 435CLIP_rep1_m.rmdup.mpileup.vcf
+
+samtools mpileup -u -I -t DP4 -v -f assembly.fasta 435CLIP_rep2_m_nodup.bam | awk '$5 != "<*>"' | tail -n +30 > 435CLIP_rep2_m.rmdup.mpileup.vcf
+
+samtools mpileup -u -I -t DP4 -v -f assembly.fasta 435CLIP_rep3_m_nodup.bam | awk '$5 != "<*>"' | tail -n +30 > 435CLIP_rep3_m.rmdup.mpileup.vcf
+
+
+######
+Need to convert vcf to excel format (works in rnaseq environment) 
+######
+
+python variant.py --v 435CLIP_rep1_m.rmdup.mpileup.vcf --snp c.elegans.WS275.snps.sorted.bed --o GSF3524_435CLIP_rep1_m.csv
+
+python variant.py --v 435CLIP_rep2_m.rmdup.mpileup.vcf --snp c.elegans.WS275.snps.sorted.bed --o GSF3524_435CLIP_rep2_m.csv
+
+python variant.py --v 435CLIP_rep3_m.rmdup.mpileup.vcf --snp c.elegans.WS275.snps.sorted.bed --o GSF3524_435CLIP_rep3_m.csv
+
+
+#open csv in R studio to see how many rows it has—Rep1 has 331796/Rep 2 has 661018/Rep 3 has 605233 rows so no need to do below 
+
+library("tidyverse")
+
+library("GenomicRanges")
+
+variants <- read.csv("/N/slate/by6/GSF3524new/variantcall/GSF3524_396_rep1_R1.csv")
+
+View(variants)
+
+
+#if the table is >1,000,000 rows, the csv will not open in excel and needs to be split into parts
+
+var1 <- dplyr::slice(variants, 1:1000000)
+
+write.table(var1, “396CLIPvariants_m1.tsv", sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE)
+
+
+#repeat until whole table is split up. For final section you can use:
+
+var2 <- dplyr::slice(variants, 1000001:nrow(variants))
+
+write.table(var2, “396CLIPvariants_m2.tsv", sep = "\t", col.names = TRUE, row.names = FALSE, quote = FALSE)
+
+
+#tsv files will now be in your directory indicated in R console, can be copied to desktop and opened in excel for analysis.
+
+
+#Copy and paste result files to Mac 
+#On Mac Terminal
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor/variantcall/GSF3524_435CLIP_rep1_m.csv ~/Desktop/
+
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor/variantcall/GSF3524_435CLIP_rep2_m.csv ~/Desktop/
+
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor/variantcall/GSF3524_435CLIP_rep3_m.csv ~/Desktop/
+
+
+
