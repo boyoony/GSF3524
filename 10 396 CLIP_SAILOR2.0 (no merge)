@@ -58,7 +58,7 @@ jq -n ’{
   "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
   "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
   "edit_type": "AG”,
-  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results"
+  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results_rep1"
 }’ > GSF3524-396CLIP-Rep1.json 
 
 
@@ -71,7 +71,7 @@ jq -n ’{
   "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
   "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
   "edit_type": "AG”,
-  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results"
+  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results_rep2"
 }’ > GSF3524-396CLIP-Rep3.json 
 
 
@@ -84,7 +84,7 @@ jq -n ’{
   "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
   "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
   "edit_type": "AG”,
-  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results"
+  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results_rep3"
 }’ > GSF3524-396CLIP-Rep3.json 
 
 
@@ -117,7 +117,9 @@ conda install -c bioconda -c conda-forge snakemake
 
 #in CLIPsailor2/results
 
-mkdir flare_results
+mkdir flare_results_rep1
+mkdir flare_results_rep2
+mkdir flare_results_rep3
 
 
 #in interactive terminal
