@@ -1,0 +1,140 @@
+# If you are in rnaseq environment, go to base environment for FLARE
+
+conda activate base 
+
+
+#in CLIPsailor2 directory
+
+mkdir sailor
+
+
+#In aligned directory
+#create merged bam file
+
+module load samtools
+
+
+## If you got an error message on gcc
+
+module unload gcc/12.1.0
+
+module load gcc/9.3.0
+
+module load python/3.9.8
+
+module load samtools
+
+￼
+# Copy and paste files to the sailor folder 
+
+cd /N/slate/by6/CLIPsailor2/results/aligned
+
+scp GSF3524-396CLIP-Rep1_S20_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N/slate/by6/CLIPsailor2/sailor
+scp GSF3524-396CLIP-Rep2_S22_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N/slate/by6/CLIPsailor2/sailor
+scp GSF3524-396CLIP-Rep3_S24_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N/slate/by6/CLIPsailor2/sailor
+
+cd /N/slate/by6/CLIPsailor2/sailor
+
+# Three replicates can be merged here, but I did not merge them #
+
+#copy bedfile to sailor directory
+#in HundleyLab project space FLARE directory
+
+cd /N/project/HundleyLab/FLARE 
+
+scp c.elegans.WS275.snps.nostrand.sorted.bed /N/slate/by6/CLIPsailor2/sailor
+
+
+#create three .json files (on text editor) with the following content for each replicate:
+
+cd /N/slate/by6/CLIPsailor2/sailor
+
+jq -n ’{
+  "samples_path": "/N/slate/by6/CLIPsailor2/sailor”,
+  "samples": [
+    "GSF3524-396CLIP-Rep1_S20_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam"             
+  ],
+  "reverse_stranded": false,
+  "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
+  "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "edit_type": "AG”,
+  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results"
+}’ > GSF3524-396CLIP-Rep1.json 
+
+
+jq -n ’{
+  "samples_path": "/N/slate/by6/CLIPsailor2/sailor”,
+  "samples": [
+    "GSF3524-396CLIP-Rep2_S22_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam"             
+  ],
+  "reverse_stranded": false,
+  "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
+  "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "edit_type": "AG”,
+  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results"
+}’ > GSF3524-396CLIP-Rep3.json 
+
+
+jq -n ’{
+  "samples_path": "/N/slate/by6/CLIPsailor2/sailor”,
+  "samples": [
+    "GSF3524-396CLIP-Rep3_S24_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam"             
+  ],
+  "reverse_stranded": false,
+  "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
+  "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "edit_type": "AG”,
+  "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results"
+}’ > GSF3524-396CLIP-Rep3.json 
+
+
+#copy .json files to carbonate
+
+scp GSF3524-396CLIP-Rep1.json /N/slate/by6/CLIPsailor2/sailor
+scp GSF3524-396CLIP-Rep2.json /N/slate/by6/CLIPsailor2/sailor
+scp GSF3524-396CLIP-Rep3.json /N/slate/by6/CLIPsailor2/sailor
+
+
+#copy workflow_sailor scripts and snakefile from HundleyLab project space FLARE directory
+
+cd /N/project/HundleyLab/FLARE 
+
+scp -r workflow_sailor /N/slate/by6/CLIPsailor2/sailor
+
+
+#make all workflow_sailor scrips executable
+
+cd /N/slate/by6/CLIPsailor/sailor/workflow_sailor
+
+chmod +x filename
+
+
+#on carbonate
+#install snakemake
+
+conda install -c bioconda -c conda-forge snakemake
+
+
+#in CLIPsailor2/results
+
+mkdir flare_results
+
+
+#in interactive terminal
+#in sailor directory
+#load singularity every single time you run SAILOR
+
+module load singularity
+
+
+#use the following command to run SAILOR. under "--singularity-args --'bind' you will have to give access to every single directory that has relevant files
+
+snakemake --snakefile /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/Snakefile --configfile /N/slate/by6/CLIPsailor2/sailor/GSF3524-396CLIP-Rep1.json --use-singularity --singularity-args '--bind /N/slate/by6/CLIPsailor2 --bind /N/slate/by6/CLIPsailor2/genome --bind /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/scripts --bind /N/slate/by6/CLIPsailor2/sailor/workflow_sailor --bind /N/slate/by6/CLIPsailor2/results/flare_results' -j1 
+snakemake --snakefile /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/Snakefile --configfile /N/slate/by6/CLIPsailor2/sailor/GSF3524-396CLIP-Rep2.json --use-singularity --singularity-args '--bind /N/slate/by6/CLIPsailor2 --bind /N/slate/by6/CLIPsailor2/genome --bind /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/scripts --bind /N/slate/by6/CLIPsailor2/sailor/workflow_sailor --bind /N/slate/by6/CLIPsailor2/results/flare_results' -j1 
+snakemake --snakefile /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/Snakefile --configfile /N/slate/by6/CLIPsailor2/sailor/GSF3524-396CLIP-Rep3.json --use-singularity --singularity-args '--bind /N/slate/by6/CLIPsailor2 --bind /N/slate/by6/CLIPsailor2/genome --bind /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/scripts --bind /N/slate/by6/CLIPsailor2/sailor/workflow_sailor --bind /N/slate/by6/CLIPsailor2/results/flare_results' -j1 
+
+
+# Copy and paste files to Mac 
+# In Mac terminal
+
+scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/7_scored_outputs/GSF3524-396* ~/Desktop/
