@@ -35,7 +35,14 @@ scp GSF3524-396CLIP-Rep3_S24_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam /N
 
 cd /N/slate/by6/CLIPsailor2/sailor
 
-# Three replicates can be merged here, but I did not merge them #
+
+# Three replicates can be merged here or you can choose to not merge when you have enough read depth for each replicate
+# Even though you choose to not merge, run below command to make sure the .bam files are in a correct format 
+
+samtools merge -@ 8 GSF3524-396CLIP-Rep1.merged.bam GSF3524-396CLIP-Rep1_S20_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam
+samtools merge -@ 8 GSF3524-396CLIP-Rep2.merged.bam GSF3524-396CLIP-Rep2_S22_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam
+samtools merge -@ 8 GSF3524-396CLIP-Rep3.merged.bam GSF3524-396CLIP-Rep3_S24_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam
+
 
 #copy bedfile to sailor directory
 #in HundleyLab project space FLARE directory
@@ -52,7 +59,7 @@ cd /N/slate/by6/CLIPsailor2/sailor
 jq -n ’{
   "samples_path": "/N/slate/by6/CLIPsailor2/sailor”,
   "samples": [
-    "GSF3524-396CLIP-Rep1_S20_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam"             
+    "GSF3524-396CLIP-Rep1.merged.bam"             
   ],
   "reverse_stranded": false,
   "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
@@ -65,20 +72,20 @@ jq -n ’{
 jq -n ’{
   "samples_path": "/N/slate/by6/CLIPsailor2/sailor”,
   "samples": [
-    "GSF3524-396CLIP-Rep2_S22_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam"             
+    "GSF3524-396CLIP-Rep2.merged.bam"             
   ],
   "reverse_stranded": false,
   "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
   "known_snps": "/N/slate/by6/CLIPsailor2/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
   "edit_type": "AG”,
   "output_dir": "/N/slate/by6/CLIPsailor2/results/flare_results_rep2"
-}’ > GSF3524-396CLIP-Rep3.json 
+}’ > GSF3524-396CLIP-Rep2.json 
 
 
 jq -n ’{
   "samples_path": "/N/slate/by6/CLIPsailor2/sailor”,
   "samples": [
-    "GSF3524-396CLIP-Rep3_S24_R1_001.dedup.combo_Aligned.sortedByCoord.out.bam"             
+    "GSF3524-396CLIP-Rep3.merged.bam"             
   ],
   "reverse_stranded": false,
   "reference_fasta": "/N/slate/by6/CLIPsailor2/genome/assembly.fasta",
