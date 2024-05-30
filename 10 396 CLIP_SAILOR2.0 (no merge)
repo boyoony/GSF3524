@@ -104,7 +104,7 @@ scp -r workflow_sailor /N/slate/by6/CLIPsailor2/sailor
 
 #make all workflow_sailor scrips executable
 
-cd /N/slate/by6/CLIPsailor/sailor/workflow_sailor
+cd /N/slate/by6/CLIPsailor2/sailor/workflow_sailor
 
 chmod +x filename
 
