@@ -146,8 +146,8 @@ snakemake --snakefile /N/slate/by6/CLIPsailor2/sailor/workflow_sailor/Snakefile 
 # Copy and paste files to Mac 
 # In Mac terminal
 
-scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results_rep1/7_scored_outputs/GSF3524-396* ~/Desktop/
-scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results_rep2/7_scored_outputs/GSF3524-396* ~/Desktop/
-scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results_rep3/7_scored_outputs/GSF3524-396* ~/Desktop/
+scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results_rep1/7_scored_outputs/GSF3524-396* ~/Desktop/
+scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results_rep2/7_scored_outputs/GSF3524-396* ~/Desktop/
+scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results_rep3/7_scored_outputs/GSF3524-396* ~/Desktop/
 
 
