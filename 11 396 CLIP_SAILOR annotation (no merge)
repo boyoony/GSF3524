@@ -48,15 +48,12 @@ python3 annotator.sailor.py --gtf c_elegans.PRJNA13758.WS275.canonical_geneset.g
 python3 annotator.sailor.py --gtf c_elegans.PRJNA13758.WS275.canonical_geneset.gtf --fwd GSF3524-396CLIP-Rep2.merged.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --rev GSF3524-396CLIP-Rep2.merged.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --wb c.elegans.WS275.annotation.final.bed --o /N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep2_annotated.sites.csv
 python3 annotator.sailor.py --gtf c_elegans.PRJNA13758.WS275.canonical_geneset.gtf --fwd GSF3524-396CLIP-Rep3.merged.bam.fwd.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --rev GSF3524-396CLIP-Rep3.merged.bam.rev.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed  --wb c.elegans.WS275.annotation.final.bed --o /N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep3_annotated.sites.csv
 
-scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep1_annotated.sites.csv ~/Desktop/
-scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep2_annotated.sites.csv ~/Desktop/
-scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep3_annotated.sites.csv ~/Desktop/
-
 
 #Copy and paste file to Mac
 #In Mac terminal 
 
-scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/7_scored_outputs/396CLIP_Rep1_annotated.sites.csv ~/Desktop/
-scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/7_scored_outputs/396CLIP_Rep2_annotated.sites.csv ~/Desktop/
-scp by6@carbonate.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/7_scored_outputs/396CLIP_Rep3_annotated.sites.csv ~/Desktop/
+scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep1_annotated.sites.csv ~/Desktop/
+scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep2_annotated.sites.csv ~/Desktop/
+scp by6@quartz.uits.iu.edu:/N/slate/by6/CLIPsailor2/results/flare_results/396CLIP_Rep3_annotated.sites.csv ~/Desktop/
+
 
