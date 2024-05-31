@@ -2,13 +2,13 @@
 
 # copy .bed files from flare results (directory 7) to sailor directory
 
-cd /N/slate/by6/CLIPsailor/results/flare_results_rep1/7_scored_outputs
+cd /N/slate/by6/CLIPsailor2/results/flare_results_rep1/7_scored_outputs
 scp *.bed /N/slate/by6/CLIPsailor2/sailor
 
-cd /N/slate/by6/CLIPsailor/results/flare_results_rep2/7_scored_outputs
+cd /N/slate/by6/CLIPsailor2/results/flare_results_rep2/7_scored_outputs
 scp *.bed /N/slate/by6/CLIPsailor2/sailor
 
-cd /N/slate/by6/CLIPsailor/results/flare_results_rep3/7_scored_outputs
+cd /N/slate/by6/CLIPsailor2/results/flare_results_rep3/7_scored_outputs
 scp *.bed /N/slate/by6/CLIPsailor2/sailor
 
 
